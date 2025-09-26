@@ -68,6 +68,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_application'])
             $stmt->execute([$applicationId, $questionId, $answer, $isCorrect ? 1 : 0]);
         }
 
+        // ===== DISCORD BENACHRICHTIGUNG SENDEN =====
+        $webhookUrl = getSetting('whitelist_webhook_url', '');
+        if (!empty($webhookUrl)) {
+            $serverName = getSetting('server_name', 'Server');
+            $discordMessage = "🔔 **NEUER WHITELIST-ANTRAG**\n\n";
+            $discordMessage .= "👤 **Bewerber:** {$user['discord_username']}\n";
+            $discordMessage .= "📅 **Eingereicht:** " . date('d.m.Y H:i') . " Uhr\n";
+            $discordMessage .= "🔗 **Antrag ansehen:** " . BASE_URL . "/admin/view_application.php?id={$applicationId}\n\n";
+            $discordMessage .= "⚡ Neuer Antrag wartet auf Bearbeitung!";
+            
+            // Discord-Nachricht senden
+            sendDiscordMessage($webhookUrl, $discordMessage);
+        }
+        // ===== ENDE DISCORD BENACHRICHTIGUNG =====
+
         $message = 'Deine Bewerbung wurde erfolgreich eingereicht!';
         $messageType = 'success';
         

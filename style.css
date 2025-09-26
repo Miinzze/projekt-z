@@ -15,6 +15,7 @@
     --accent-red: #8c4a4a;
     --accent-orange: #d97030;
     --accent-dark: #2a2a2a;
+    --accent-purple: #8a2be2; /* Neue Twitch-Farbe */
 }
 
 body {
@@ -209,6 +210,208 @@ body {
     background: #baa968;
     transform: translateY(-2px);
 }
+
+/* ===== TWITCH STYLES ===== */
+.loading-dots {
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Twitch Section unter den Hero Stats */
+.hero-twitch-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.twitch-main-card {
+    background: #252525;
+    border: 1px solid #3d3d3d;
+    border-radius: 2px;
+    padding: 2rem;
+    min-width: 400px;
+    max-width: 600px;
+    width: 100%;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.twitch-main-card:hover {
+    border-color: var(--accent-purple);
+    box-shadow: 0 5px 20px rgba(138, 43, 226, 0.2);
+}
+
+/* Twitch Carousel im großen Kasten */
+.twitch-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--accent-purple);
+    color: var(--accent-purple);
+    padding: 0.8rem;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 2;
+    font-size: 1.2rem;
+}
+
+.carousel-nav:hover {
+    background: var(--accent-purple);
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-prev {
+    left: -60px;
+}
+
+.carousel-next {
+    right: -60px;
+}
+
+.twitch-content {
+    text-align: center;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.twitch-streamer-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.3s ease;
+    width: 100%;
+}
+
+.twitch-streamer-link:hover {
+    transform: scale(1.05);
+}
+
+.twitch-streamer {
+    position: relative;
+    padding: 1rem;
+}
+
+.live-indicator {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #ff0000;
+    color: white;
+    font-size: 0.9rem;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-weight: bold;
+    animation: pulse-red 2s infinite;
+    box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+}
+
+@keyframes pulse-red {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.streamer-info {
+    margin-top: 0.8rem;
+}
+
+.streamer-name {
+    display: block;
+    font-weight: bold;
+    color: var(--accent-purple);
+    font-size: 1.4rem;
+    margin-bottom: 0.3rem;
+}
+
+.viewer-count {
+    display: block;
+    font-size: 1rem;
+    color: var(--accent-tan);
+    margin-bottom: 0.3rem;
+}
+
+.game-name {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 350px;
+    margin: 0 auto;
+}
+
+.stream-counter {
+    position: absolute;
+    bottom: 0;
+    right: 10px;
+    background: rgba(138, 43, 226, 0.2);
+    color: var(--accent-purple);
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--accent-purple);
+}
+
+.twitch-offline,
+.twitch-error,
+.twitch-loading {
+    text-align: center;
+    padding: 2rem;
+}
+
+.twitch-offline .stat-icon,
+.twitch-error .stat-icon,
+.twitch-loading .stat-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.twitch-offline .stat-value,
+.twitch-error .stat-value {
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    margin-bottom: 0.3rem;
+}
+
+.twitch-loading .stat-value {
+    color: var(--accent-purple);
+    font-size: 1.5rem;
+    margin-bottom: 0.3rem;
+}
+
+.twitch-offline .stat-label,
+.twitch-error .stat-label,
+.twitch-loading .stat-label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ===== END TWITCH STYLES ===== */
 
 /* Sections */
 .news-section,
@@ -525,4 +728,107 @@ textarea.form-control {
 
 .modal-close:hover {
     color: var(--accent-red);
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .hero-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .hero-twitch-section {
+        margin-top: 1.5rem;
+        padding: 0 1rem;
+    }
+    
+    .twitch-main-card {
+        min-width: auto;
+        width: 100%;
+        padding: 1.5rem;
+        margin: 0;
+    }
+    
+    .carousel-prev {
+        left: -35px;
+    }
+    
+    .carousel-next {
+        right: -35px;
+    }
+    
+    .carousel-nav {
+        width: 40px;
+        height: 40px;
+        padding: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .streamer-name {
+        font-size: 1.2rem;
+    }
+
+    .viewer-count {
+        font-size: 0.9rem;
+    }
+
+    .game-name {
+        max-width: 250px;
+        font-size: 0.8rem;
+    }
+
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .twitch-main-card {
+        padding: 1rem;
+    }
+    
+    .carousel-prev {
+        left: -25px;
+    }
+    
+    .carousel-next {
+        right: -25px;
+    }
+    
+    .carousel-nav {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+
+    .live-indicator {
+        font-size: 0.8rem;
+        padding: 3px 8px;
+    }
+
+    .twitch-offline .stat-icon,
+    .twitch-error .stat-icon,
+    .twitch-loading .stat-icon {
+        font-size: 2.5rem;
+    }
+
+    .twitch-offline .stat-value,
+    .twitch-error .stat-value,
+    .twitch-loading .stat-value {
+        font-size: 1.3rem;
+    }
 }

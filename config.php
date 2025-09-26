@@ -3,16 +3,16 @@ session_start();
 
 // Datenbank Konfiguration
 define('DB_HOST', 'localhost');
-define('DB_NAME', '');
-define('DB_USER', '');
-define('DB_PASS', '');
+define('DB_NAME', 'd04487e8');
+define('DB_USER', 'd04487e8');
+define('DB_PASS', 'Gufxc6YeVnPjcBjyNHGY');
 
 // Discord OAuth2 Konfiguration
-define('DISCORD_CLIENT_ID', '');
-define('DISCORD_CLIENT_SECRET', '');
+define('DISCORD_CLIENT_ID', '1241093263872626708');
+define('DISCORD_CLIENT_SECRET', 'Wd00OFow158pcLf7kLuZratpOWanmCvr');
 define('DISCORD_REDIRECT_URI', 'http://projekt-z.eu/callback.php'); // Anpassen!
-define('DISCORD_BOT_TOKEN', '');
-define('DISCORD_GUILD_ID', '');
+define('DISCORD_BOT_TOKEN', 'MTI0MTA5MzI2Mzg3MjYyNjcwOA.Gw8k-_.twjEgJVr2ejXEXG160UmHA5ZwvExey0Cq92Z-k');
+define('DISCORD_GUILD_ID', '1239140800873631764');
 
 // Basis URL
 define('BASE_URL', 'http://projekt-z.eu'); // Anpassen!
@@ -164,6 +164,73 @@ function sendDiscordMessage($webhookUrl, $content) {
     curl_close($ch);
     
     return $response;
+}
+
+// Erweiterte Discord-Funktion für News mit Embeds
+function sendNewsDiscordMessage($webhookUrl, $title, $content, $url = '', $author = '', $imageUrl = '') {
+    if (empty($webhookUrl)) {
+        return false;
+    }
+
+    // Content für Discord kürzen (maximal 2048 Zeichen für embed description)
+    $shortContent = strlen($content) > 1500 ? substr($content, 0, 1500) . '...' : $content;
+    
+    // Embed-Struktur für schönere News-Anzeige
+    $embed = [
+        'title' => $title,
+        'description' => $shortContent,
+        'color' => 0xa89968, // Accent-Tan Farbe
+        'timestamp' => date('c'), // ISO 8601 format
+        'footer' => [
+            'text' => getSetting('server_name', 'Server') . ' News'
+        ]
+    ];
+    
+    // URL hinzufügen falls vorhanden
+    if (!empty($url)) {
+        $embed['url'] = $url;
+    }
+    
+    // Author hinzufügen falls vorhanden
+    if (!empty($author)) {
+        $embed['author'] = [
+            'name' => $author,
+            'icon_url' => 'https://cdn.discordapp.com/embed/avatars/0.png'
+        ];
+    }
+    
+    // Bild hinzufügen falls vorhanden
+    if (!empty($imageUrl)) {
+        $embed['image'] = [
+            'url' => $imageUrl
+        ];
+    }
+    
+    $data = [
+        'embeds' => [$embed]
+    ];
+    
+    // Role Mention als separater Content (nicht im Embed)
+    $mentionRole = getSetting('news_webhook_mention_role', '');
+    if (!empty($mentionRole)) {
+        $data['content'] = "<@&{$mentionRole}>";
+    }
+    
+    $json = json_encode($data);
+    
+    $ch = curl_init($webhookUrl);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    return $httpCode >= 200 && $httpCode < 300;
 }
 
 function checkDiscordServerMembership($userId) {

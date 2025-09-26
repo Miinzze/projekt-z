@@ -6,7 +6,7 @@ requirePermission('manage_roles');
 $message = '';
 $messageType = '';
 
-// Verfügbare Berechtigungen
+// Verfügbare Berechtigungen (ERWEITERT UM STREAMER-VERWALTUNG)
 $availablePermissions = [
     // Dashboard & Basis
     'view_dashboard' => 'Dashboard ansehen',
@@ -35,6 +35,9 @@ $availablePermissions = [
     'create_rules' => 'Regeln erstellen',
     'edit_rules' => 'Regeln bearbeiten',
     'delete_rules' => 'Regeln löschen',
+    
+    // NEUE TWITCH/STREAMER VERWALTUNG
+    'manage_streamers' => 'Twitch-Streamer verwalten',
     
     // Admin-Funktionen
     'manage_settings' => 'System-Einstellungen verwalten',
@@ -114,6 +117,7 @@ $roles = $stmt->fetchAll();
             <nav class="admin-nav">
                 <a href="dashboard.php" class="admin-nav-link">📊 Dashboard</a>
                 <a href="roles.php" class="admin-nav-link active">👥 Rollen & Rechte</a>
+                <a href="streamers.php" class="admin-nav-link">📺 Streamer verwalten</a>
                 <a href="settings.php" class="admin-nav-link">⚙️ Einstellungen</a>
                 <a href="../index.php" class="admin-nav-link">🏠 Zur Hauptseite</a>
             </nav>
@@ -153,12 +157,37 @@ $roles = $stmt->fetchAll();
 
                         <div class="form-group">
                             <label>Berechtigungen</label>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
-                                <?php foreach ($availablePermissions as $key => $label): ?>
-                                    <label style="color: var(--text-primary);">
-                                        <input type="checkbox" name="permissions[<?php echo $key; ?>]" value="1">
-                                        <?php echo $label; ?>
-                                    </label>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                                <?php 
+                                // Berechtigungen nach Kategorien gruppiert anzeigen
+                                $categories = [
+                                    'Dashboard & Basis' => ['view_dashboard', 'apply_whitelist'],
+                                    'News-System' => ['view_news', 'create_news', 'edit_news', 'delete_news'],
+                                    'Whitelist-System' => ['view_applications', 'review_applications', 'manage_questions', 'toggle_whitelist'],
+                                    'Features-System' => ['view_features', 'create_features', 'edit_features', 'delete_features'],
+                                    'Regelwerk-System' => ['view_rules', 'create_rules', 'edit_rules', 'delete_rules'],
+                                    'Twitch-Integration' => ['manage_streamers'],
+                                    'Admin-Funktionen' => ['manage_settings', 'manage_roles', 'manage_users']
+                                ];
+                                
+                                foreach ($categories as $categoryName => $permissions):
+                                ?>
+                                    <div style="border: 1px solid var(--border-color); border-radius: 4px; padding: 0.8rem; background: rgba(42, 42, 42, 0.3);">
+                                        <h4 style="color: var(--accent-tan); margin: 0 0 0.8rem 0; font-size: 0.9rem;">
+                                            <?php echo $categoryName; ?>
+                                        </h4>
+                                        <?php foreach ($permissions as $key): ?>
+                                            <?php if (isset($availablePermissions[$key])): ?>
+                                                <label style="display: block; color: var(--text-primary); font-size: 0.85rem; margin-bottom: 0.3rem;">
+                                                    <input type="checkbox" name="permissions[<?php echo $key; ?>]" value="1" style="margin-right: 0.5rem;">
+                                                    <?php echo $availablePermissions[$key]; ?>
+                                                    <?php if ($key === 'manage_streamers'): ?>
+                                                        <span style="color: var(--accent-purple); font-size: 0.8rem;">✨ NEU</span>
+                                                    <?php endif; ?>
+                                                </label>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    </div>
                                 <?php endforeach; ?>
                             </div>
                         </div>
@@ -201,6 +230,10 @@ $roles = $stmt->fetchAll();
                                             echo '<span style="color: var(--text-secondary);">Keine</span>';
                                         } else {
                                             echo count($activePerms) . ' Berechtigungen';
+                                            // Twitch-Berechtigung hervorheben
+                                            if (isset($perms['manage_streamers']) && $perms['manage_streamers']) {
+                                                echo ' <span style="color: var(--accent-purple); font-size: 0.8rem;">📺</span>';
+                                            }
                                         }
                                         ?>
                                     </td>
@@ -227,7 +260,7 @@ $roles = $stmt->fetchAll();
 
     <!-- Edit Modal -->
     <div id="editModal" class="modal">
-        <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-content" style="max-width: 900px;">
             <span class="modal-close" onclick="closeEditModal()">&times;</span>
             <h3 style="color: var(--accent-green); margin-bottom: 1rem;">Rolle bearbeiten</h3>
             
@@ -248,12 +281,26 @@ $roles = $stmt->fetchAll();
 
                 <div class="form-group">
                     <label>Berechtigungen</label>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
-                        <?php foreach ($availablePermissions as $key => $label): ?>
-                            <label style="color: var(--text-primary);">
-                                <input type="checkbox" name="permissions[<?php echo $key; ?>]" value="1" id="edit_perm_<?php echo $key; ?>">
-                                <?php echo $label; ?>
-                            </label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                        <?php 
+                        foreach ($categories as $categoryName => $permissions):
+                        ?>
+                            <div style="border: 1px solid var(--border-color); border-radius: 4px; padding: 0.8rem; background: rgba(42, 42, 42, 0.3);">
+                                <h4 style="color: var(--accent-tan); margin: 0 0 0.8rem 0; font-size: 0.9rem;">
+                                    <?php echo $categoryName; ?>
+                                </h4>
+                                <?php foreach ($permissions as $key): ?>
+                                    <?php if (isset($availablePermissions[$key])): ?>
+                                        <label style="display: block; color: var(--text-primary); font-size: 0.85rem; margin-bottom: 0.3rem;">
+                                            <input type="checkbox" name="permissions[<?php echo $key; ?>]" value="1" id="edit_perm_<?php echo $key; ?>" style="margin-right: 0.5rem;">
+                                            <?php echo $availablePermissions[$key]; ?>
+                                            <?php if ($key === 'manage_streamers'): ?>
+                                                <span style="color: var(--accent-purple); font-size: 0.8rem;">✨ NEU</span>
+                                            <?php endif; ?>
+                                        </label>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
@@ -290,5 +337,11 @@ $roles = $stmt->fetchAll();
             }
         }
     </script>
+
+    <style>
+        .accent-purple {
+            --accent-purple: #8a2be2;
+        }
+    </style>
 </body>
 </html>
