@@ -3,16 +3,16 @@ session_start();
 
 // Datenbank Konfiguration
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'd04487e8');
-define('DB_USER', 'd04487e8');
-define('DB_PASS', 'Gufxc6YeVnPjcBjyNHGY');
+define('DB_NAME', '');
+define('DB_USER', '');
+define('DB_PASS', '');
 
 // Discord OAuth2 Konfiguration
-define('DISCORD_CLIENT_ID', '1241093263872626708');
-define('DISCORD_CLIENT_SECRET', 'Wd00OFow158pcLf7kLuZratpOWanmCvr');
+define('DISCORD_CLIENT_ID', '');
+define('DISCORD_CLIENT_SECRET', '');
 define('DISCORD_REDIRECT_URI', 'http://projekt-z.eu/callback.php'); // Anpassen!
-define('DISCORD_BOT_TOKEN', 'MTI0MTA5MzI2Mzg3MjYyNjcwOA.Gw8k-_.twjEgJVr2ejXEXG160UmHA5ZwvExey0Cq92Z-k');
-define('DISCORD_GUILD_ID', '1239140800873631764');
+define('DISCORD_BOT_TOKEN', '');
+define('DISCORD_GUILD_ID', '');
 
 // Basis URL
 define('BASE_URL', 'http://projekt-z.eu'); // Anpassen!
